@@ -1,4 +1,4 @@
-name: Unzip and Build Signed AAB
+name: Unzip and Build Signed AAB (API 36)
 
 on:
   push:
@@ -13,10 +13,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Unzip Source File
+      - name: Unzip and Update SDK to 36
         run: |
           unzip -o "*.zip" -d extracted_source
-          ls -la extracted_source
+          cd extracted_source/StudyQuizMaster
+          sed -i 's/compileSdk 34/compileSdk 36/g' app/build.gradle
+          sed -i 's/compileSdkVersion 34/compileSdkVersion 36/g' app/build.gradle
+          sed -i 's/targetSdk 34/targetSdk 36/g' app/build.gradle
+          sed -i 's/targetSdkVersion 34/targetSdkVersion 36/g' app/build.gradle
+          sed -i '/READ_MEDIA_IMAGES/d' app/src/main/AndroidManifest.xml
+          sed -i '/READ_MEDIA_VIDEO/d' app/src/main/AndroidManifest.xml
+          sed -i '/READ_EXTERNAL_STORAGE/d' app/src/main/AndroidManifest.xml
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -35,7 +42,7 @@ jobs:
       - name: Upload Final AAB and APK
         uses: actions/upload-artifact@v4
         with:
-          name: StudyQuizMaster-Final-Files
+          name: StudyQuizMaster-API36-Files
           path: |
             extracted_source/StudyQuizMaster/app/build/outputs/bundle/release/*.aab
             extracted_source/StudyQuizMaster/app/build/outputs/apk/release/*.apk
